@@ -1,0 +1,190 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap');
+@import "tailwindcss";
+
+/* ============================================
+   AKILAN PORTFOLIO — GLOBAL STYLES
+   Dark Fantasy + Abyss + Maximum Aura
+   ============================================ */
+
+/* --- Font Imports --- */
+
+/* --- CSS Custom Properties --- */
+@theme {
+  --color-void: #000000;
+  --color-abyss: #050507;
+  --color-deep: #0a0a0f;
+  --color-charcoal: #121218;
+  --color-graphite: #1a1a24;
+  --color-slate: #252530;
+  --color-ash: #35354a;
+  --color-mist: #4a4a65;
+  --color-ghost: #6a6a88;
+  --color-phantom: #8888aa;
+  --color-whisper: #aaaacc;
+  --color-light: #ccccee;
+  --color-bright: #eeeeff;
+  --color-accent-cold: #4466aa;
+  --color-accent-warm: #aa6644;
+  --color-accent-signal: #6688cc;
+  --color-accent-danger: #cc4444;
+  --color-accent-organic: #447755;
+  --font-sans: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* --- Base Reset --- */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: auto; /* We control scroll behavior manually */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-void);
+  color: var(--color-whisper);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* --- Selection --- */
+::selection {
+  background-color: rgba(68, 102, 170, 0.3);
+  color: var(--color-bright);
+}
+
+/* --- Scrollbar --- */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-void);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-ash);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-mist);
+}
+
+/* --- Focus States --- */
+*:focus-visible {
+  outline: 1px solid var(--color-accent-cold);
+  outline-offset: 2px;
+}
+
+/* --- Utility Animations --- */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glitchFlicker {
+  0%, 100% { opacity: 1; }
+  4% { opacity: 0.8; transform: translateX(-2px); }
+  8% { opacity: 1; transform: translateX(0); }
+  42% { opacity: 0.9; transform: translateX(1px); }
+  44% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes drift {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes textResolve {
+  0% { filter: blur(8px); opacity: 0; }
+  60% { filter: blur(2px); opacity: 0.7; }
+  100% { filter: blur(0); opacity: 1; }
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+/* --- Reduced Motion --- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* --- Typography Utilities --- */
+.font-mono-tech {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-ghost);
+}
+
+.text-resolve {
+  animation: textResolve 1.2s ease-out forwards;
+}
+
+/* --- World Layers --- */
+.world-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+.world-layer-interactive {
+  position: fixed;
+  inset: 0;
+  pointer-events: auto;
+}
+
+/* --- Noise Overlay --- */
+.noise-overlay::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: overlay;
+}
+
+/* --- Grain Effect --- */
+.grain-overlay::before {
+  content: '';
+  position: fixed;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  opacity: 0.015;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9998;
+  animation: drift 8s ease-in-out infinite;
+}

@@ -1,0 +1,68 @@
+import type { SecretData } from '../types/projects';
+
+export const secrets: SecretData[] = [
+  {
+    id: 'secret-nids-attention',
+    content: 'The attention mechanism in NIDS weighs temporal features from BiLSTM outputs, enabling the model to focus on anomalous packet sequences rather than treating all traffic equally.',
+    section: 'artifacts',
+    discoveryHint: 'Near the NIDS artifact orbital path',
+    position: { x: 0.3, y: 0.25 },
+    entityType: 'eye',
+  },
+  {
+    id: 'secret-fuzzer-fork',
+    content: 'The fuzzer uses fork() to snapshot process state before each test case, avoiding the overhead of re-executing the target from scratch. Each mutated input runs in an isolated child process.',
+    section: 'artifacts',
+    discoveryHint: 'Hidden in fractured geometry near the fuzzer',
+    position: { x: 0.7, y: 0.35 },
+    entityType: 'mechanical',
+  },
+  {
+    id: 'secret-fuzzer-coverage',
+    content: 'Coverage instrumentation inserts trampolines at branch points in the target binary. New code paths discovered by mutated inputs are tracked via a shared-memory bitmap.',
+    section: 'artifacts',
+    discoveryHint: 'A particle anomaly near the orbital ring',
+    position: { x: 0.6, y: 0.6 },
+    entityType: 'anomaly',
+  },
+  {
+    id: 'secret-log-streaming',
+    content: 'The log analyzer processes input as a stream rather than loading entire files. Each line is classified, grouped, and correlated in a single pass through a state machine.',
+    section: 'artifacts',
+    discoveryHint: 'Streams flowing near the log analyzer artifact',
+    position: { x: 0.4, y: 0.7 },
+    entityType: 'particle',
+  },
+  {
+    id: 'secret-docverify-pss',
+    content: 'RSA-PSS adds randomized padding before signing, making each signature unique even for identical documents — unlike deterministic PKCS#1 v1.5 signatures.',
+    section: 'artifacts',
+    discoveryHint: 'Cryptographic geometry pulses near DocVerify',
+    position: { x: 0.8, y: 0.5 },
+    entityType: 'mechanical',
+  },
+  {
+    id: 'secret-netcli-confidence',
+    content: 'Diagnostic results include a confidence score derived from multiple probe results. A DNS failure combined with successful TCP may yield "partial connectivity" at 0.6 confidence.',
+    section: 'artifacts',
+    discoveryHint: 'Routing paths diverge near the Network CLI artifact',
+    position: { x: 0.2, y: 0.45 },
+    entityType: 'anomaly',
+  },
+  {
+    id: 'secret-cat-architecture',
+    content: 'The CNN in NIDS extracts spatial features from traffic flow matrices, while BiLSTM captures temporal dependencies across packet sequences — a dual-perspective architecture.',
+    section: 'stack',
+    discoveryHint: 'A cat watches from behind the constellation',
+    position: { x: 0.15, y: 0.3 },
+    entityType: 'cat',
+  },
+  {
+    id: 'secret-void-mutation',
+    content: 'Mutation strategies include bit flipping, arithmetic operations on interesting integers, dictionary-based token insertion, and splicing from the input corpus.',
+    section: 'about',
+    discoveryHint: 'Cursor proximity reveals a fragment in the void',
+    position: { x: 0.85, y: 0.2 },
+    entityType: 'eye',
+  },
+];
