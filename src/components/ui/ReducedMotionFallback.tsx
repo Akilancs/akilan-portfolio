@@ -1,6 +1,7 @@
 import { identity } from '../../data/identity';
 import { projects } from '../../data/projects';
 import { skills, skillCategories } from '../../data/skills';
+import { skillIconMap, contactIconMap } from '../../data/iconMap';
 
 export function ReducedMotionFallback() {
   return (
@@ -43,7 +44,6 @@ export function ReducedMotionFallback() {
                   <span className="font-mono text-xs text-accent-signal px-2 py-1 bg-charcoal">{project.statusLabel}</span>
                 </div>
                 <p className="text-ghost leading-relaxed">{project.description}</p>
-                
                 <div className="mt-4">
                   <h4 className="text-sm font-mono text-ash mb-2 uppercase tracking-wider">Stack</h4>
                   <div className="flex flex-wrap gap-2">
@@ -64,11 +64,15 @@ export function ReducedMotionFallback() {
               <div key={category.id} className="flex flex-col gap-4">
                 <h3 className="text-sm font-mono text-ash uppercase tracking-wider">{category.label}</h3>
                 <ul className="flex flex-wrap gap-2">
-                  {skills.filter(s => s.category === category.id).map(skill => (
-                    <li key={skill.id} className="text-sm text-whisper bg-charcoal px-3 py-1.5 rounded-sm">
-                      {skill.name}
-                    </li>
-                  ))}
+                  {skills.filter(s => s.category === category.id).map(skill => {
+                    const icon = skillIconMap[skill.id];
+                    return (
+                      <li key={skill.id} className="text-sm text-whisper bg-charcoal px-3 py-1.5 rounded-sm flex items-center gap-1.5">
+                        {icon && <img src={icon} alt="" className="w-3.5 h-3.5 opacity-60" />}
+                        {skill.name}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             ))}
@@ -79,17 +83,20 @@ export function ReducedMotionFallback() {
           <h2 className="text-2xl font-mono text-accent-cold border-b border-charcoal pb-4 uppercase tracking-widest">Contact</h2>
           <ul className="flex flex-col gap-4">
             <li>
-              <a href={`mailto:${identity.email}`} className="text-bright hover:text-accent-cold hover:underline font-mono">
+              <a href={`mailto:${identity.email}`} className="text-bright hover:text-accent-cold hover:underline font-mono flex items-center gap-2">
+                {contactIconMap.email && <img src={contactIconMap.email} alt="" className="w-4 h-4 opacity-60" />}
                 Email -&gt; {identity.email}
               </a>
             </li>
             <li>
-              <a href={identity.github} target="_blank" rel="noopener noreferrer" className="text-bright hover:text-accent-cold hover:underline font-mono">
+              <a href={identity.github} target="_blank" rel="noopener noreferrer" className="text-bright hover:text-accent-cold hover:underline font-mono flex items-center gap-2">
+                {contactIconMap.github && <img src={contactIconMap.github} alt="" className="w-4 h-4 opacity-60" />}
                 GitHub -&gt; {identity.github.replace('https://', '')}
               </a>
             </li>
             <li>
-              <a href={identity.linkedin} target="_blank" rel="noopener noreferrer" className="text-bright hover:text-accent-cold hover:underline font-mono">
+              <a href={identity.linkedin} target="_blank" rel="noopener noreferrer" className="text-bright hover:text-accent-cold hover:underline font-mono flex items-center gap-2">
+                {contactIconMap.linkedin && <img src={contactIconMap.linkedin} alt="" className="w-4 h-4 opacity-60" />}
                 LinkedIn -&gt; {identity.linkedin.replace('https://', '')}
               </a>
             </li>

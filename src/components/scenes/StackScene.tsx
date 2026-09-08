@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useWorldState } from '../../state/useWorldState';
 import { skills, skillCategories } from '../../data/skills';
+import { skillIconMap } from '../../data/iconMap';
 
 export function StackScene() {
   const { currentSection, sectionProgress } = useWorldState();
@@ -31,26 +32,40 @@ export function StackScene() {
               <span className="font-mono text-xs text-ghost mb-6 tracking-widest uppercase">
                 {cat.label}
               </span>
-              <ul className="flex flex-wrap justify-center gap-4 max-w-md">
+              <ul className="flex flex-wrap justify-center gap-3 max-w-md">
                 {skills
                   .filter(s => s.category === cat.id)
-                  .map(skill => (
-                    <li key={skill.id}>
-                      <button
-                        onMouseEnter={() => setActiveSkill(skill.id)}
-                        onMouseLeave={() => setActiveSkill(null)}
-                        className={`font-mono text-sm px-3 py-1.5 transition-all duration-300 border ${
-                          activeSkill === skill.id
-                            ? 'border-bright text-bright bg-graphite'
-                            : skill.prominence === 'core'
-                              ? 'border-slate text-whisper hover:border-ghost'
-                              : 'border-transparent text-phantom hover:text-ghost'
-                        }`}
-                      >
-                        {skill.name}
-                      </button>
-                    </li>
-                  ))}
+                  .map(skill => {
+                    const icon = skillIconMap[skill.id];
+                    const isActive = activeSkill === skill.id;
+                    return (
+                      <li key={skill.id}>
+                        <button
+                          onMouseEnter={() => setActiveSkill(skill.id)}
+                          onMouseLeave={() => setActiveSkill(null)}
+                          className={`font-mono text-sm px-3 py-1.5 flex items-center gap-2 transition-all duration-300 border ${
+                            isActive
+                              ? 'border-bright text-bright bg-graphite'
+                              : skill.prominence === 'core'
+                                ? 'border-slate text-whisper hover:border-ghost'
+                                : 'border-transparent text-phantom hover:text-ghost'
+                          }`}
+                        >
+                          {icon && (
+                            <img
+                              src={icon}
+                              alt=""
+                              className={`w-4 h-4 transition-opacity duration-300 ${
+                                isActive ? 'opacity-100' : 'opacity-50'
+                              }`}
+                              style={{ filter: isActive ? 'none' : 'grayscale(1) brightness(0.7)' }}
+                            />
+                          )}
+                          {skill.name}
+                        </button>
+                      </li>
+                    );
+                  })}
               </ul>
             </li>
           ))}

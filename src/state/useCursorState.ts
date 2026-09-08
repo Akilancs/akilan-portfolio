@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 export interface CursorState {
   x: number;
@@ -10,41 +10,48 @@ export interface CursorState {
   isTouch: boolean;
 }
 
+const INITIAL: CursorState = { x: 0, y: 0, nx: 0, ny: 0, vx: 0, vy: 0, isTouch: false };
+
+/**
+ * Tracks cursor position via a mutable ref.
+ * Returns the ref object directly — components that need live cursor data
+ * should read from the ref inside their animation loop, not via React state.
+ * This eliminates per-frame React re-renders caused by mouse movement.
+ */
 export const useCursorState = (): CursorState => {
-  const [state, setState] = useState<CursorState>({ x: 0, y: 0, nx: 0, ny: 0, vx: 0, vy: 0, isTouch: false });
-  const lastState = useRef({ x: 0, y: 0, time: performance.now() });
-  const rafId = useRef<number | null>(null);
+  const stateRef = useRef<CursorState>({ ...INITIAL });
+  const lastRef = useRef({ x: 0, y: 0, time: performance.now() });
 
   useEffect(() => {
-    const handleMove = (clientX: number, clientY: number, isTouch: boolean) => {
-      if (rafId.current !== null) return;
-      
-      rafId.current = requestAnimationFrame(() => {
-        const now = performance.now();
-        const dt = Math.max(now - lastState.current.time, 1);
-        const vx = (clientX - lastState.current.x) / dt;
-        const vy = (clientY - lastState.current.y) / dt;
+    let pending = false;
 
-        setState({
-          x: clientX,
-          y: clientY,
-          nx: (clientX / window.innerWidth) * 2 - 1,
-          ny: (clientY / window.innerHeight) * 2 - 1,
-          vx,
-          vy,
-          isTouch
-        });
+    const flush = (clientX: number, clientY: number, isTouch: boolean) => {
+      const now = performance.now();
+      const dt = Math.max(now - lastRef.current.time, 1);
+      const vx = (clientX - lastRef.current.x) / dt;
+      const vy = (clientY - lastRef.current.y) / dt;
 
-        lastState.current = { x: clientX, y: clientY, time: now };
-        rafId.current = null;
-      });
+      stateRef.current.x = clientX;
+      stateRef.current.y = clientY;
+      stateRef.current.nx = (clientX / window.innerWidth) * 2 - 1;
+      stateRef.current.ny = (clientY / window.innerHeight) * 2 - 1;
+      stateRef.current.vx = vx;
+      stateRef.current.vy = vy;
+      stateRef.current.isTouch = isTouch;
+
+      lastRef.current = { x: clientX, y: clientY, time: now };
+      pending = false;
     };
 
-    const onMouseMove = (e: MouseEvent) => handleMove(e.clientX, e.clientY, false);
+    const onMouseMove = (e: MouseEvent) => {
+      if (pending) return;
+      pending = true;
+      requestAnimationFrame(() => flush(e.clientX, e.clientY, false));
+    };
     const onTouchMove = (e: TouchEvent) => {
-      if (e.touches.length > 0) {
-        handleMove(e.touches[0].clientX, e.touches[0].clientY, true);
-      }
+      if (pending || e.touches.length === 0) return;
+      pending = true;
+      requestAnimationFrame(() => flush(e.touches[0].clientX, e.touches[0].clientY, true));
     };
 
     window.addEventListener('mousemove', onMouseMove, { passive: true });
@@ -53,9 +60,9 @@ export const useCursorState = (): CursorState => {
     return () => {
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('touchmove', onTouchMove);
-      if (rafId.current !== null) cancelAnimationFrame(rafId.current);
     };
   }, []);
 
-  return state;
+  // Return the mutable ref's current object — the CanvasRenderer reads it via cursorRef
+  return stateRef.current;
 };
