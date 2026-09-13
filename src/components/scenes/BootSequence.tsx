@@ -11,12 +11,13 @@ export function BootSequence() {
     completeBoot();
   }
 
-  // Phase timing within section progress
-  const phase1 = p > 0.1 ? Math.min((p - 0.1) / 0.15, 1) : 0;   // init text
-  const phase2 = p > 0.25 ? Math.min((p - 0.25) / 0.15, 1) : 0;  // geometric shapes
-  const phase3 = p > 0.4 ? Math.min((p - 0.4) / 0.2, 1) : 0;     // name reveal
-  const phase4 = p > 0.6 ? Math.min((p - 0.6) / 0.15, 1) : 0;    // tagline
-  const fadeOut = p > 0.8 ? Math.min((p - 0.8) / 0.2, 1) : 0;     // fade out
+  // Phase timing — AKILAN is visible immediately (progress=0)
+  const nameOpacity = Math.min(1, 0.6 + p * 0.4); // starts at 0.6, goes to 1
+  const nameBlur = Math.max(0, (0.3 - p) * 15);   // slight blur fades quickly
+  const taglineOpacity = p > 0.15 ? Math.min((p - 0.15) / 0.2, 1) : 0;
+  const sysTextOpacity = p > 0.05 ? Math.min((p - 0.05) / 0.1, 1) : 0;
+  const circleOpacity = p > 0.1 ? Math.min((p - 0.1) / 0.2, 1) * 0.2 : 0;
+  const fadeOut = p > 0.75 ? Math.min((p - 0.75) / 0.25, 1) : 0;
 
   const opacity = active ? 1 - fadeOut : 0;
 
@@ -29,12 +30,12 @@ export function BootSequence() {
       className="fixed inset-0 flex items-center justify-center pointer-events-none"
       style={{ opacity, zIndex: 40 }}
     >
-      {/* System init text */}
+      {/* System init text — appears shortly after scroll begins */}
       <div className="absolute inset-0 flex flex-col justify-between p-8 font-mono text-[10px] text-phantom opacity-50">
-        <div style={{ opacity: phase1, transform: `translateY(${(1 - phase1) * 10}px)` }}>
+        <div style={{ opacity: sysTextOpacity, transform: `translateY(${(1 - sysTextOpacity) * 10}px)` }}>
           INITIALIZING SYSTEM... [OK]
         </div>
-        <div className="text-right" style={{ opacity: phase1, transform: `translateY(${(1 - phase1) * -10}px)` }}>
+        <div className="text-right" style={{ opacity: sysTextOpacity }}>
           LOADING VOID / {Math.floor(p * 100)}%
         </div>
       </div>
@@ -43,32 +44,42 @@ export function BootSequence() {
       <div className="absolute inset-0 flex items-center justify-center">
         <div
           className="w-64 h-64 border border-ghost rounded-full mix-blend-screen"
-          style={{ opacity: phase2 * 0.2, transform: `scale(${0.5 + phase2 * 0.5})` }}
+          style={{ opacity: circleOpacity, transform: `scale(${0.5 + p * 0.5})` }}
         />
       </div>
 
-      {/* Name + tagline */}
+      {/* Name — VISIBLE IMMEDIATELY */}
       <div className="flex flex-col items-center justify-center relative">
         <h1
           className="text-7xl md:text-9xl font-bold tracking-tight text-bright"
           style={{
-            opacity: phase3,
-            filter: `blur(${(1 - phase3) * 20}px)`,
-            transform: `scale(${1 + (1 - phase3)})`,
+            opacity: nameOpacity,
+            filter: `blur(${nameBlur}px)`,
+            transform: `scale(${1 + nameBlur * 0.03})`,
           }}
         >
           AKILAN
         </h1>
+
+        {/* Tagline — fades in as you start scrolling */}
         <p
-          className="text-xl md:text-2xl font-light text-ghost mt-4 tracking-widest"
+          className="text-lg md:text-2xl font-light text-ghost mt-4 tracking-widest"
           style={{
-            opacity: phase4,
-            transform: `translateY(${(1 - phase4) * 20}px)`,
-            clipPath: `inset(0 ${100 - phase4 * 100}% 0 0)`,
+            opacity: taglineOpacity,
+            transform: `translateY(${(1 - taglineOpacity) * 20}px)`,
           }}
         >
           I build things until I understand how they break.
         </p>
+
+        {/* Scroll hint — visible at start, fades as you scroll */}
+        <div
+          className="absolute -bottom-24 flex flex-col items-center gap-2 font-mono text-[10px] text-phantom tracking-widest"
+          style={{ opacity: Math.max(0, 1 - p * 5) }}
+        >
+          <span>SCROLL</span>
+          <span className="animate-bounce">↓</span>
+        </div>
       </div>
     </section>
   );
