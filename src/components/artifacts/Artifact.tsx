@@ -14,10 +14,11 @@ export function Artifact({ project, position, isSelected, onSelect, scrollProgre
   const baseOpacity = isVisible ? Math.min((scrollProgress - 0.05) * 5, 1) : 0;
   
   const themeColors: Record<string, string> = {
-    'ai': 'rgba(102, 136, 204, 0.4)',
-    'systems': 'rgba(68, 102, 170, 0.4)',
-    'data': 'rgba(170, 102, 68, 0.4)',
-    'web': 'rgba(170, 170, 204, 0.4)'
+    'network-layered-signals': 'rgba(102, 136, 204, 0.4)',
+    'fractured-executable': 'rgba(204, 68, 68, 0.4)',
+    'streams-timeline': 'rgba(68, 170, 136, 0.4)',
+    'cryptographic-geometry': 'rgba(170, 136, 68, 0.4)',
+    'routing-topology': 'rgba(170, 170, 204, 0.4)',
   };
   
   const color = themeColors[project.infrastructureTheme] || 'rgba(170,170,204,0.4)';

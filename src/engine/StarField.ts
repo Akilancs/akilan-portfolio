@@ -18,10 +18,12 @@ export class StarField {
     twinkleSpeed: number;
   }> = [];
   private height: number = 0;
+  private width: number = 0;
   private time: number = 0;
 
   public init(count: number, width: number, height: number) {
     
+    this.width = width;
     this.height = height;
     const random = seededRandom(42);
     
@@ -51,6 +53,8 @@ export class StarField {
       // Wrap around
       if (star.y < 0) star.y += this.height;
       if (star.y > this.height) star.y -= this.height;
+      if (star.x < 0) star.x += this.width;
+      if (star.x > this.width) star.x -= this.width;
     }
   }
 

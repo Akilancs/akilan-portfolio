@@ -14,6 +14,8 @@ export interface WorldStateContextValue extends WorldState {
   triggerClimax: (active: boolean) => void;
   setPerformanceTier: (tier: PerformanceTier) => void;
   setTransitionProgress: (progress: number) => void;
+  setDeviceFlags: (isMobile: boolean, isTouch: boolean, isReducedMotion: boolean) => void;
+  setReturningVisitor: (isReturning: boolean) => void;
 }
 
 const WorldStateContext = createContext<WorldStateContextValue | null>(null);
@@ -23,8 +25,7 @@ export const WorldStateProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [sectionProgress, setSectionProgress] = useState(0);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [scrollVelocity, setScrollVelocity] = useState(0);
-  const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('down');
-  const [scrollAcceleration, setScrollAcceleration] = useState(0);
+  const [scrollDirection, setScrollDirectionState] = useState<'up' | 'down' | 'idle'>('idle');
   const [bootCompleted, setBootCompleted] = useState(false);
   const [bootSkipped, setBootSkipped] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -33,24 +34,21 @@ export const WorldStateProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [orbitalTime, setOrbitalTime] = useState(0);
   const [secretsDiscovered, setSecretsDiscovered] = useState<string[]>([]);
   const [performanceTier, setPerformanceTierState] = useState<PerformanceTier>('high');
-  const [isReducedMotion, _setIsReducedMotion] = useState(false);
-  const [isReturningVisitor, _setIsReturningVisitor] = useState(false);
-  const [isMobile, _setIsMobile] = useState(false);
+  const [isReducedMotion, setIsReducedMotionState] = useState(false);
+  const [isReturningVisitor, setIsReturningVisitorState] = useState(false);
+  const [isMobile, setIsMobileState] = useState(false);
   const [climaxActive, setClimaxActive] = useState(false);
   const [transitionProgress, setTransitionProgressState] = useState(0);
-
-  // Note: isReducedMotion, isReturningVisitor, isMobile could be initialized via useEffect reading matchMedia/localStorage
 
   const setSection = useCallback((section: Section, progress: number) => {
     setCurrentSection(section);
     setSectionProgress(progress);
   }, []);
 
-  const setScrollState = useCallback((position: number, velocity: number, direction: 'up' | 'down', acceleration: number) => {
+  const setScrollState = useCallback((position: number, velocity: number, direction: 'up' | 'down', _acceleration: number) => {
     setScrollPosition(position);
     setScrollVelocity(velocity);
-    setScrollDirection(direction);
-    setScrollAcceleration(acceleration);
+    setScrollDirectionState(direction);
     setOrbitalTime((prev) => prev + velocity * 0.01);
   }, []);
 
@@ -93,14 +91,23 @@ export const WorldStateProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setTransitionProgressState(progress);
   }, []);
 
-  // Build a `state` object for components that destructure { state, ...actions }
-  const stateObj = useMemo(() => ({
+  const setDeviceFlags = useCallback((mobile: boolean, touch: boolean, reducedMotion: boolean) => {
+    setIsMobileState(mobile);
+    setIsReducedMotionState(reducedMotion);
+    // isTouch is consumed by isMobile logic already, but we store mobile
+    void touch; // Touch detection feeds into mobile
+  }, []);
+
+  const setReturningVisitor = useCallback((isReturning: boolean) => {
+    setIsReturningVisitorState(isReturning);
+  }, []);
+
+  const stateObj = useMemo((): WorldState => ({
     currentSection,
     sectionProgress,
     scrollPosition,
     scrollVelocity,
-    scrollDirection: scrollDirection as 'up' | 'down' | 'idle',
-    scrollAcceleration,
+    scrollDirection,
     bootCompleted,
     bootSkipped,
     menuOpen,
@@ -115,17 +122,14 @@ export const WorldStateProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     climaxActive,
     transitionProgress,
   }), [
-    currentSection, sectionProgress, scrollPosition, scrollVelocity, scrollDirection, scrollAcceleration,
+    currentSection, sectionProgress, scrollPosition, scrollVelocity, scrollDirection,
     bootCompleted, bootSkipped, menuOpen, selectedArtifact, artifactHUDVisible, orbitalTime,
     secretsDiscovered, performanceTier, isReducedMotion, isReturningVisitor, isMobile, climaxActive, transitionProgress,
   ]);
 
-  const value = useMemo(() => ({
-    // Flat access: const { currentSection, toggleMenu } = useWorldState()
+  const value = useMemo((): WorldStateContextValue => ({
     ...stateObj,
-    // Nested access: const { state, toggleMenu } = useWorldState()
     state: stateObj,
-    // Actions
     setSection,
     setScrollState,
     selectArtifact,
@@ -137,10 +141,12 @@ export const WorldStateProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     triggerClimax,
     setPerformanceTier,
     setTransitionProgress,
+    setDeviceFlags,
+    setReturningVisitor,
   }), [
     stateObj,
     setSection, setScrollState, selectArtifact, deselectArtifact, toggleMenu, discoverSecret,
-    skipBoot, completeBoot, triggerClimax, setPerformanceTier, setTransitionProgress,
+    skipBoot, completeBoot, triggerClimax, setPerformanceTier, setTransitionProgress, setDeviceFlags, setReturningVisitor,
   ]);
 
   return <WorldStateContext.Provider value={value}>{children}</WorldStateContext.Provider>;

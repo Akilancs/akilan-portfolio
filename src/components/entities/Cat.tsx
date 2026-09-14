@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { useWorldState } from '../../state/useWorldState';
 import type { Section } from '../../types/world';
 
@@ -21,7 +21,7 @@ export default function Cat({ id, position, section, cursorX, cursorY }: CatProp
   const isClose = distance < 200;
   const isVeryClose = distance < 100;
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isVeryClose && currentSection === section) {
       discoverSecret(`cat-${id}`);
     }

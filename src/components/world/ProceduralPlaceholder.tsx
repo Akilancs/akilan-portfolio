@@ -40,24 +40,32 @@ export default function ProceduralPlaceholder({ category, width = 100, height = 
           <div className="absolute top-0 left-1/3 w-[1px] h-full bg-ghost" />
         </div>
       );
-    case 'env-cosmic':
+    case 'env-cosmic': {
+      const stars = Array.from({ length: 20 }, (_, i) => ({
+        w: ((i * 7 + 3) % 5) * 0.6 + 1,
+        h: ((i * 7 + 3) % 5) * 0.6 + 1,
+        top: `${((i * 37 + 13) % 100)}%`,
+        left: `${((i * 53 + 7) % 100)}%`,
+        opacity: ((i * 11 + 5) % 10) * 0.05 + 0.1,
+      }));
       return (
         <div style={style} className="relative overflow-hidden opacity-40">
-          {[...Array(20)].map((_, i) => (
-            <div 
-              key={i} 
-              className="absolute bg-ghost rounded-full" 
+          {stars.map((s, i) => (
+            <div
+              key={i}
+              className="absolute bg-ghost rounded-full"
               style={{
-                width: Math.random() * 3 + 1,
-                height: Math.random() * 3 + 1,
-                top: `${Math.random() * 100}%`,
-                left: `${Math.random() * 100}%`,
-                opacity: Math.random() * 0.5 + 0.1
+                width: s.w,
+                height: s.h,
+                top: s.top,
+                left: s.left,
+                opacity: s.opacity,
               }}
             />
           ))}
         </div>
       );
+    }
     case 'env-corruption':
       return (
         <div style={style} className="relative overflow-hidden opacity-30 mix-blend-overlay">
